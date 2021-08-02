@@ -78,7 +78,8 @@ class Order:
 
 ### ファイル操作クラス
 class Option:
-    def read_csv(self, filename):
+    @staticmethod
+    def read_csv(filename):
         item_master = []
         # csvから商品登録
         with open(f'./{filename}', 'r', encoding='utf_8-sig') as f:
@@ -88,20 +89,22 @@ class Option:
                 item_master.append(Item(rows[0], rows[1], rows[2]))
         return item_master
 
-    def mk_new_dir(self, dir_name):
+    @staticmethod
+    def mk_new_dir(dir_name):
         # カレントディレクトリの取得
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        new_dir = f'{base_dir}\\{dir_name}'
+        new_dir = os.path.join(base_dir, dir_name)
         # 指定ディレクトリ作成
         if not os.path.exists(new_dir):
             os.mkdir(new_dir)
         return new_dir
-    
-    def decide_file(self, new_dir_name):
+
+    @staticmethod
+    def create_file(new_dir_name):
          # 現在時刻取得
-        now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '.txt'
         # ファイル名決定
-        receipt = f'{new_dir_name}\\{now}.txt'
+        receipt = os.path.join(new_dir_name, now)
         return receipt
 
 
@@ -122,7 +125,7 @@ def main():
     register_front_name = 'receipt_box'
     register_front_dir = option.mk_new_dir(register_front_name)
     # ファイル作成
-    newest_receipt = option.decide_file(register_front_dir)
+    newest_receipt = option.create_file(register_front_dir)
 
     # オーダー登録した商品の出力
     total_price = order.output_regist_item(newest_receipt)

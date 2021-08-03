@@ -2,6 +2,8 @@ import os
 import csv
 import datetime
 
+item_csv = 'item.csv'
+register_front_name = 'receipt_box'
 ### 商品クラス
 class Item:
     def __init__(self,item_code,item_name,price):
@@ -24,18 +26,33 @@ class Order:
         self.item_order_list=[]
         self.item_master=item_master
 
+    def check_data(self, input_code):
+        for n in self.item_master:
+            if input_code == Item.get_code(n):
+                return Item.get_name(n)
+
     def add_item_order(self):
         while True:
             try:
                 item_code = int(input('登録する商品コードを入力してください:\n'))
-                item_num = int(input('個数を入力してください:\n'))
             except ValueError:
                 print('もう一度やり直してください。')
                 continue
             item_code_s = str(item_code).zfill(3)
-            item_code_num = {'code':item_code_s, 'num':item_num}
-            self.item_order_list.append(item_code_num)
-            print(f'{item_code_s}を{item_num}個で登録しました！')
+            # 追加　存在チェック
+            check = self.check_data(item_code_s)
+            if check != None:
+                try:
+                    item_num = int(input('個数を入力してください:\n'))
+                except ValueError:
+                    print('商品登録からやり直してください。')
+                    continue
+                item_code_num = {'code':item_code_s, 'num':item_num}
+                self.item_order_list.append(item_code_num)
+                print(f'{item_code_s}を{item_num}個で登録しました！')
+            else:
+                print(f'{item_code_s}の商品は存在しません。')
+                continue
             
             again_code = input('登録を続けますか？　y/n\n')
             if again_code == 'n':
@@ -112,7 +129,6 @@ class Option:
 ### メイン処理
 def main():
     # マスタ登録
-    item_csv = 'item.csv'
     # csvから商品登録
     option = Option()
     item_master = option.read_csv(item_csv)
@@ -122,7 +138,6 @@ def main():
     order.add_item_order()
 
     # ディレクトリチェック
-    register_front_name = 'receipt_box'
     register_front_dir = option.mk_new_dir(register_front_name)
     # ファイル作成
     newest_receipt = option.create_file(register_front_dir)

@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>eelテスト</title>
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+        <h2>eelテスト</h2>
+        <form name='input_form'>
+            商品番号<input id="item_code" type="text" placeholder="商品番号を入力" /><br/>
+            数量<input id="item_num" type="text" placeholder="数量を入力" /><br/>
+            検索キーワード<input id="kw_search" type="text" placeholder="キーワードを入力" name='input' />
+            <input type="button" value="検索" id="search" />
+        </form>
+        <textarea class='log-area' id="log" ></textarea>
+        <script type="text/javascript" src="./eel.js"></script>
+        <script type="text/javascript">
+            async function js_function(keyword, fileName, dirname) {
+                // document.write('<p>JavaScriptのテスト</p>');
+                let val = await eel.kimetsu_search(keyword, fileName, dirname)();
+                document.getElementById('log').value += val + "\n";
+            }
+            let search = document.getElementById('search')
+            search.addEventListener('click', () => {
+                if (input_form.input.value == "") {
+                    alert("何か入力してください");
+                    return false;
+                }else {
+                    js_function(kw_search.value, item_code.value, item_num.value);
+                    return true;
+                }
+            })
+        </script>
+    </body>
+</html>

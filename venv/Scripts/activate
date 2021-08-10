@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Raito\Documents\python_task\python_task_04\venv"
+VIRTUAL_ENV="C:\Users\Raito\Documents\python_task\python_task_05\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

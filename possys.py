@@ -31,32 +31,37 @@ class Order:
             if input_code == Item.get_code(n):
                 return Item.get_name(n)
 
-    def add_item_order(self):
-        while True:
+    def add_item_order(self, item_code, item_num):
+        item_code_s = str(item_code).zfill(3)
+        item_num_i = 0
+        total_price = 0
+        # 追加　存在チェック
+        check = self.check_data(item_code_s)
+        if check != None:
             try:
-                item_code = int(input('登録する商品コードを入力してください:\n'))
+                item_num_i = int(item_num)
             except ValueError:
-                print('もう一度やり直してください。')
-                continue
-            item_code_s = str(item_code).zfill(3)
-            # 追加　存在チェック
-            check = self.check_data(item_code_s)
-            if check != None:
-                try:
-                    item_num = int(input('個数を入力してください:\n'))
-                except ValueError:
-                    print('商品登録からやり直してください。')
-                    continue
-                item_code_num = {'code':item_code_s, 'num':item_num}
-                self.item_order_list.append(item_code_num)
-                print(f'{item_code_s}を{item_num}個で登録しました！')
-            else:
-                print(f'{item_code_s}の商品は存在しません。')
-                continue
+                print('商品登録からやり直してください。')
             
-            again_code = input('登録を続けますか？　y/n\n')
-            if again_code == 'n':
-                break
+            item_code_num = {'code':item_code_s, 'num':item_num_i}
+            self.item_order_list.append(item_code_num)
+            for register in self.item_master:
+                if item_code_num['code'] == Item.get_code(register):
+                    item_num_s = str(item_code_num['num'])
+                    code_sum = int(Item.get_price(register)) * item_code_num['num']
+                    goods_name = f'商品名　　　　              {Item.get_name(register)}'
+                    goods_price = f'商品価格　　　              ￥{Item.get_price(register)}'
+                    goods_num = f'商品個数　　　              ×{item_num_s}'
+                    goods_sum = f'合計金額　　　              ￥{code_sum}'
+                    # ファイルへ書き出し
+                    with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
+                        wf.write(f'{goods_name}\n{goods_price}\n{goods_num}\n{goods_sum}\n')
+                    # 最終的な合計金額
+                    total_price += code_sum
+            print(f'{item_code_s}を{item_num}個で登録しました！')
+        else:
+            print(f'{item_code_s}の商品は存在しません。')
+            
     
     def output_regist_item(self, newest_receipt):
         total_price = 0
@@ -76,22 +81,6 @@ class Order:
                     total_price += code_sum
         return total_price
     
-    def remain_cal(self, total_price, newest_receipt):
-        with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
-            wf.write('-----------------------------------\n')
-            wf.write(f'商品の合計金額              ￥{total_price}\n')
-            while True:
-                try:
-                    money = int(input('支払う金額を入力してください:\n'))
-                    break
-                except ValueError:
-                    print('もう一度やり直してください。')
-            if money > total_price:
-                change = money - total_price
-                wf.write(f'お預かり金額　              ￥{money}\n')
-                wf.write(f'お釣り　　　　              ￥{change}\n')
-            else:
-                print('商品を購入することができません。')
 
 ### ファイル操作クラス
 class Option:
@@ -106,28 +95,9 @@ class Option:
                 item_master.append(Item(rows[0], rows[1], rows[2]))
         return item_master
 
-    @staticmethod
-    def mk_new_dir(dir_name):
-        # カレントディレクトリの取得
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        new_dir = os.path.join(base_dir, dir_name)
-        # 指定ディレクトリ作成
-        if not os.path.exists(new_dir):
-            os.mkdir(new_dir)
-        return new_dir
-
-    @staticmethod
-    def create_file(new_dir_name):
-         # 現在時刻取得
-        now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '.txt'
-        # ファイル名決定
-        receipt = os.path.join(new_dir_name, now)
-        return receipt
-
-
     
 ### メイン処理
-def main():
+def regist(code, number):
     # マスタ登録
     # csvから商品登録
     option = Option()
@@ -135,18 +105,25 @@ def main():
     
     # オーダー登録
     order=Order(item_master)
-    order.add_item_order()
-
-    # ディレクトリチェック
-    register_front_dir = option.mk_new_dir(register_front_name)
-    # ファイル作成
-    newest_receipt = option.create_file(register_front_dir)
+    order.add_item_order(code, number)
 
     # オーダー登録した商品の出力
     total_price = order.output_regist_item(newest_receipt)
 
-    # お釣りの出力
-    order.remain_cal(total_price, newest_receipt)
+def payment(total_price, newest_receipt):
+    with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
+        wf.write('-----------------------------------\n')
+        wf.write(f'商品の合計金額              ￥{total_price}\n')
+        while True:
+            try:
+                money = int(input('支払う金額を入力してください:\n'))
+                break
+            except ValueError:
+                print('もう一度やり直してください。')
+        if money > total_price:
+            change = money - total_price
+            wf.write(f'お預かり金額　              ￥{money}\n')
+            wf.write(f'お釣り　　　　              ￥{change}\n')
+        else:
+            print('商品を購入することができません。')
     
-if __name__ == "__main__":
-    main()

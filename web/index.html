@@ -1,22 +1,22 @@
 <html>
     <head>
-        <title>eelテスト</title>
+        <title>青果店</title>
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h2>eelテスト</h2>
+        <h2>青果店</h2>
         <form name='input_form'>
             商品番号<input id="item_code" type="text" placeholder="商品番号を入力" /><br/>
-            数量<input id="item_num" type="text" placeholder="数量を入力" /><br/>
-            検索キーワード<input id="kw_search" type="text" placeholder="キーワードを入力" name='input' />
-            <input type="button" value="検索" id="search" />
+            数量<input id="item_num" type="text" placeholder="数量を入力" />
+            <input type="button" value="登録" id="regist" />
         </form>
         <textarea class='log-area' id="log" ></textarea>
+        <input type="button" value="お支払いへ" id="pay" />
         <script type="text/javascript" src="./eel.js"></script>
         <script type="text/javascript">
-            async function js_function(keyword, fileName, dirname) {
+            async function js_function(code, number) {
                 // document.write('<p>JavaScriptのテスト</p>');
-                let val = await eel.kimetsu_search(keyword, fileName, dirname)();
+                let val = await eel.pos_system(code, number)();
                 document.getElementById('log').value += val + "\n";
             }
             let search = document.getElementById('search')
@@ -25,7 +25,7 @@
                     alert("何か入力してください");
                     return false;
                 }else {
-                    js_function(kw_search.value, item_code.value, item_num.value);
+                    js_function(item_code.value, item_num.value);
                     return true;
                 }
             })

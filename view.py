@@ -7,9 +7,8 @@ end_point="index.html"
 size=(700,600)
 
 @ eel.expose
-def pos_system():
-    possys.main()
-    print('main')
+def pos_system(code, number):
+    possys.regist(code, number)
     
 
 

@@ -6,8 +6,8 @@
     <body>
         <h2>青果店</h2>
         <form name='input_form'>
-            商品番号<input id="item_code" type="text" placeholder="商品番号を入力" /><br/>
-            数量<input id="item_num" type="text" placeholder="数量を入力" />
+            商品番号<input id="item_code" type="text" placeholder="商品番号を入力" name='input_01' /><br/>
+            数量<input id="item_num" type="text" placeholder="数量を入力" name='input_02' />
             <input type="button" value="登録" id="regist" />
         </form>
         <textarea class='log-area' id="log" ></textarea>
@@ -19,9 +19,9 @@
                 let val = await eel.pos_system(code, number)();
                 document.getElementById('log').value += val + "\n";
             }
-            let search = document.getElementById('search')
-            search.addEventListener('click', () => {
-                if (input_form.input.value == "") {
+            let regist = document.getElementById('regist')
+            regist.addEventListener('click', () => {
+                if (input_form.input_01.value == "" || input_form.input_02.value == "") {
                     alert("何か入力してください");
                     return false;
                 }else {

@@ -43,43 +43,39 @@ class Order:
             except ValueError:
                 print('商品登録からやり直してください。')
             
-            item_code_num = {'code':item_code_s, 'num':item_num_i}
-            self.item_order_list.append(item_code_num)
+            item_code_num = {'code':item_code_s, 'num':item_num_i}#
+            self.item_order_list.append(item_code_num)#
             for register in self.item_master:
                 if item_code_num['code'] == Item.get_code(register):
                     item_num_s = str(item_code_num['num'])
                     code_sum = int(Item.get_price(register)) * item_code_num['num']
-                    goods_name = f'商品名　　　　              {Item.get_name(register)}'
-                    goods_price = f'商品価格　　　              ￥{Item.get_price(register)}'
-                    goods_num = f'商品個数　　　              ×{item_num_s}'
-                    goods_sum = f'合計金額　　　              ￥{code_sum}'
-                    # ファイルへ書き出し
-                    with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
-                        wf.write(f'{goods_name}\n{goods_price}\n{goods_num}\n{goods_sum}\n')
-                    # 最終的な合計金額
-                    total_price += code_sum
-            print(f'{item_code_s}を{item_num}個で登録しました！')
+                    goods_name = f'商品名：　{Item.get_name(register)}'
+                    goods_price = f'商品価格： ￥{Item.get_price(register)}'
+                    goods_num = f'商品個数： ×{item_num_s}'
+                    goods_sum = f'合計金額： ￥{code_sum}'
+                    goods_print = f'{goods_name}\n{goods_price}\n{goods_num}\n{goods_sum}\n'
+                    return goods_print, code_sum
         else:
-            print(f'{item_code_s}の商品は存在しません。')
+            return f'{item_code_s}の商品は存在しません。', 0
             
     
-    def output_regist_item(self, newest_receipt):
-        total_price = 0
-        for item in self.item_order_list:
-            for register in self.item_master:
-                if item['code'] == Item.get_code(register):
-                    item_num_s = str(item['num'])
-                    code_sum = int(Item.get_price(register)) * item['num']
-                    goods_name = f'商品名　　　　              {Item.get_name(register)}'
-                    goods_price = f'商品価格　　　              ￥{Item.get_price(register)}'
-                    goods_num = f'商品個数　　　              ×{item_num_s}'
-                    goods_sum = f'合計金額　　　              ￥{code_sum}'
-                    # ファイルへ書き出し
-                    with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
-                        wf.write(f'{goods_name}\n{goods_price}\n{goods_num}\n{goods_sum}\n')
-                    # 最終的な合計金額
-                    total_price += code_sum
-        return total_price
+    # def output_regist_item(self, newest_receipt):
+    #     total_price = 0
+    #     for item in self.item_order_list:
+    #         for register in self.item_master:
+    #             if item['code'] == Item.get_code(register):
+    #                 item_num_s = str(item['num'])
+    #                 code_sum = int(Item.get_price(register)) * item['num']
+    #                 goods_name = f'商品名　　　　              {Item.get_name(register)}'
+    #                 goods_price = f'商品価格　　　              ￥{Item.get_price(register)}'
+    #                 goods_num = f'商品個数　　　              ×{item_num_s}'
+    #                 goods_sum = f'合計金額　　　              ￥{code_sum}'
+    #                 # ファイルへ書き出し
+    #                 with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
+    #                     wf.write(f'{goods_name}\n{goods_price}\n{goods_num}\n{goods_sum}\n')
+    #                 # 最終的な合計金額
+    #                 total_price += code_sum
+    #     return total_price
     
 
 ### ファイル操作クラス
@@ -102,13 +98,15 @@ def regist(code, number):
     # csvから商品登録
     option = Option()
     item_master = option.read_csv(item_csv)
+    print('item_master:', item_master)
     
     # オーダー登録
     order=Order(item_master)
-    order.add_item_order(code, number)
+    order_info = order.add_item_order(code, number)
 
+    return order_info
     # オーダー登録した商品の出力
-    total_price = order.output_regist_item(newest_receipt)
+    # total_price = order.output_regist_item(newest_receipt)
 
 def payment(total_price, newest_receipt):
     with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:

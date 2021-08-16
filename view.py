@@ -8,7 +8,10 @@ size=(700,600)
 
 @ eel.expose
 def pos_system(code, number):
-    possys.regist(code, number)
+    print('test')
+    output_data = possys.regist(code, number)
+    print('output_data', output_data)
+    print(type(output_data))
     
 
 

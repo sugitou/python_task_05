@@ -8,10 +8,13 @@ size=(700,600)
 
 @ eel.expose
 def pos_system(code, number):
-    print('test')
     output_data = possys.regist(code, number)
+    return output_data
     print('output_data', output_data)
     print(type(output_data))
+    # 関数を動かすたびに金額を足していく
+    # total_price += output_data[1]
+    # print('output_data', output_data[1])
     
 
 

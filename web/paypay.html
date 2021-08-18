@@ -1,17 +1,15 @@
 <html>
     <head>
         <title>青果店</title>
-        <link rel="stylesheet" href="./style.css">
+        <link rel="stylesheet" href="./style_pay.css">
     </head>
     <body>
         <h2>青果店</h2>
+        <input type="button" onclick="history.back()" value="戻る" /><br/>
         <form name='input_form'>
-            商品番号<input id="item_code" type="text" placeholder="商品番号を入力" name='input_01' /><br/>
-            数量<input id="item_num" type="text" placeholder="数量を入力" name='input_02' />
-            <input type="button" value="登録" id="regist" />
+            お支払い金額<input id="item_num" type="text" placeholder="金額を入力" />
+            <input type="button" value="お会計" id="payment" name='input' />
         </form>
-        <textarea class='log-area' id="log" ></textarea>
-        <input type="button" onclick="location.href='./paypay.html'" value="お支払いへ" id="pay" />
         <script type="text/javascript" src="./eel.js"></script>
         <script type="text/javascript">
             async function js_function(code, number) {
@@ -19,12 +17,13 @@
                 let val = await eel.pos_system(code, number)();
                 document.getElementById('log').value += val + "\n";
             }
-            let regist = document.getElementById('regist')
-            regist.addEventListener('click', () => {
-                if (input_form.input_01.value == "" || input_form.input_02.value == "") {
+            let payment = document.getElementById('payment')
+            payment.addEventListener('click', () => {
+                if (input_form.input.value == "") {
                     alert("何か入力してください");
                     return false;
                 }else {
+                    document.write('<p>JavaScriptのテスト</p>');
                     js_function(item_code.value, item_num.value);
                     return true;
                 }

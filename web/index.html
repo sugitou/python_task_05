@@ -11,7 +11,12 @@
             <input type="button" value="登録" id="regist" />
         </form>
         <textarea class='log-area' id="log" ></textarea>
-        <input type="button" onclick="location.href='./paypay.html'" value="お支払いへ" id="pay" />
+        <!-- <button onclick="link('./paypay.html')" >お支払いへ</button>-->
+        <form name='input_form2'>
+            お支払い金額<input id="money" type="text" placeholder="金額を入力" name='input' />
+            <input type="button" value="お会計" id="payment" />
+        </form>
+        <div id="result"></div>
         <script type="text/javascript" src="./eel.js"></script>
         <script type="text/javascript">
             async function js_function(code, number) {
@@ -29,6 +34,24 @@
                     return true;
                 }
             })
+            async function cal_func(money) {
+                // document.write('<p>JavaScriptのテスト</p>');
+                let res = await eel.pay_system(money)();
+                document.getElementById('result').textContent = res ;
+            }
+            let payment = document.getElementById('payment')
+            payment.addEventListener('click', () => {
+                if (input_form2.input.value == "") {
+                    alert("何か入力してください");
+                    return false;
+                }else {
+                    cal_func(money.value);
+                    return true;
+                }
+            })
+            // function link(target) {
+            //    window.location.href=target
+            //}
         </script>
     </body>
 </html>

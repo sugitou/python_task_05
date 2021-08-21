@@ -3,8 +3,7 @@ import csv
 import datetime
 
 item_csv = 'item.csv'
-register_front_name = 'receipt_box'
-total_price = 0
+# total_price = 0
 ### 商品クラス
 class Item:
     def __init__(self,item_code,item_name,price):
@@ -23,10 +22,10 @@ class Item:
 
 ### オーダークラス
 class Order:
-    total_price = 0
     def __init__(self,item_master):
         self.item_order_list=[]
         self.item_master=item_master
+        self.total_price = 0
 
     def check_data(self, input_code):
         for n in self.item_master:
@@ -62,61 +61,42 @@ class Order:
                     goods_name = f'商品名：　{Item.get_name(register)}'
                     goods_price = f'商品価格： ￥{Item.get_price(register)}'
                     goods_num = f'商品個数： ×{item_num_s}'
-                    goods_sum = f'合計金額： ￥{code_sum}'
+                    goods_sum = f'商品金額： ￥{code_sum}'
                     goods_print = f'{goods_name}\n{goods_price}\n{goods_num}\n{goods_sum}\n'
-            return goods_print, code_sum
+                    self.total_price += code_sum
+            return goods_print
         else:
             # 商品コードが存在しない場合
             return f'{item_code_s}の商品は存在しません。\n', 0
+    
+    def get_price(self):
+        return self.total_price
 
-### ファイル操作クラス
-class Option:
-    @staticmethod
-    def read_csv(filename):
-        item_master = []
-        # csvから商品登録
-        with open(f'./{filename}', 'r', encoding='utf_8-sig') as f:
-            h = next(csv.reader(f))
-            for row in f:
-                rows = row.rstrip().split(',')
-                item_master.append(Item(rows[0], rows[1], rows[2]))
-        return item_master
+
 
     
 ### メイン処理
-def regist(code, number):
-    # マスタ登録
-    # csvから商品登録
-    option = Option()
-    item_master = option.read_csv(item_csv)
-    
-    # オーダー登録
-    order=Order(item_master)
-    # 出力値と金額を受け取る
-    output_data, item_sum = order.add_item_order(code, number)
-
-    # グローバル変数定義
-    global total_price
-    total_price += item_sum
-
+def regist(code, number, order):
+    # 出力値を受け取る
+    output_data = order.add_item_order(code, number)
+    str_p = f'総額： ￥{order.get_price()}\n'
+    output_data += str_p
     return output_data
-    # オーダー登録した商品の出力
-    # total_price = order.output_regist_item(newest_receipt)
 
-def payment(total_price, newest_receipt):
-    with open(newest_receipt, 'a', encoding='utf_8-sig') as wf:
-        wf.write('-----------------------------------\n')
-        wf.write(f'商品の合計金額              ￥{total_price}\n')
-        while True:
-            try:
-                money = int(input('支払う金額を入力してください:\n'))
-                break
-            except ValueError:
-                print('もう一度やり直してください。')
-        if money > total_price:
-            change = money - total_price
-            wf.write(f'お預かり金額　              ￥{money}\n')
-            wf.write(f'お釣り　　　　              ￥{change}\n')
-        else:
-            print('商品を購入することができません。')
+def set_price(order):
+    return order.get_price()
+
+def payment(money, order):
+    print("計算するよ。")
+    money_i = 0
+    try:
+        money_i = int(money)
+    except ValueError:
+        return '数字を入力してください。'
+    if money_i > order.get_price():
+        change = money_i - order.get_price()
+        change_result = f'{change}円のお返しです。\nまたのお越しをお待ちしております！'
+        return change_result
+    else:
+        return '商品を購入することができません。'
     

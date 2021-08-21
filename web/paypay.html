@@ -5,17 +5,18 @@
     </head>
     <body>
         <h2>青果店</h2>
-        <input type="button" onclick="history.back()" value="戻る" /><br/>
+        <div id="print"></div>
         <form name='input_form'>
-            お支払い金額<input id="item_num" type="text" placeholder="金額を入力" />
-            <input type="button" value="お会計" id="payment" name='input' />
+            お支払い金額<input id="money" type="text" placeholder="金額を入力" name='input' />
+            <input type="button" value="お会計" id="payment" />
         </form>
+        <div id="result"></div>
         <script type="text/javascript" src="./eel.js"></script>
         <script type="text/javascript">
-            async function js_function(code, number) {
+            async function cal_func(money) {
                 // document.write('<p>JavaScriptのテスト</p>');
-                let val = await eel.pos_system(code, number)();
-                document.getElementById('log').value += val + "\n";
+                let res = await eel.pay_system(money)();
+                document.getElementById('result').textContent = res ;
             }
             let payment = document.getElementById('payment')
             payment.addEventListener('click', () => {
@@ -23,8 +24,7 @@
                     alert("何か入力してください");
                     return false;
                 }else {
-                    document.write('<p>JavaScriptのテスト</p>');
-                    js_function(item_code.value, item_num.value);
+                    cal_func(money.value);
                     return true;
                 }
             })

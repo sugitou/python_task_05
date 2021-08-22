@@ -1,57 +1,90 @@
+<!doctype html>
 <html>
     <head>
         <title>青果店</title>
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h2>青果店</h2>
-        <form name='input_form'>
-            商品番号<input id="item_code" type="text" placeholder="商品番号を入力" name='input_01' /><br/>
-            数量<input id="item_num" type="text" placeholder="数量を入力" name='input_02' />
-            <input type="button" value="登録" id="regist" />
-        </form>
-        <textarea class='log-area' id="log" ></textarea>
-        <!-- <button onclick="link('./paypay.html')" >お支払いへ</button>-->
-        <form name='input_form2'>
-            お支払い金額<input id="money" type="text" placeholder="金額を入力" name='input' />
-            <input type="button" value="お会計" id="payment" />
-        </form>
-        <div id="result"></div>
+        <div class="head">
+            <h2>青果店</h2>
+        </div>
+        <div class="main">
+            <div class="regist_area" id="wrap01">
+                <form name='input_form'>
+                    商品番号<input id="item_code" type="text" placeholder="商品番号を入力" name='input_i' /><br/>
+                    数量<input id="item_num" type="text" placeholder="数量を入力" name='input_n' />
+                    <input type="button" value="登録" id="regist" />
+                </form>
+                <textarea class='regist-log-area' id="rlog" ></textarea>
+            </div>
+            <div class="payment_area" id="wrap02">
+                <form name='input_form2'>
+                    お支払い金額<br/>
+                    <input id="money" type="text" placeholder="金額を入力" name='input_p' /><br/>
+                    クーポンコード<br/>
+                    <input id="coupon" type="text" placeholder="クーポンを入力" name='input_c' />
+                    <input type="button" value="お会計" id="payment" />
+                </form>
+                <textarea class='paypay-log-area' id="plog" ></textarea>
+            </div>
+        </div>
+        <input type="button" value="お支払い/商品登録" onclick="vis_invis()" />
         <script type="text/javascript" src="./eel.js"></script>
         <script type="text/javascript">
-            async function js_function(code, number) {
+            // 登録関数
+            async function buy_func(code, number) {
                 // document.write('<p>JavaScriptのテスト</p>');
                 let val = await eel.pos_system(code, number)();
-                document.getElementById('log').value += val + "\n";
+                document.getElementById('rlog').value += val + "\n";
             }
             let regist = document.getElementById('regist')
             regist.addEventListener('click', () => {
-                if (input_form.input_01.value == "" || input_form.input_02.value == "") {
+                if (input_form.input_i.value == "" || input_form.input_n.value == "") {
                     alert("何か入力してください");
                     return false;
                 }else {
-                    js_function(item_code.value, item_num.value);
+                    buy_func(item_code.value, item_num.value);
                     return true;
                 }
             })
-            async function cal_func(money) {
-                // document.write('<p>JavaScriptのテスト</p>');
-                let res = await eel.pay_system(money)();
-                document.getElementById('result').textContent = res ;
+            // 支払い関数
+            async function cal_func(money, coupon) {
+                let res = await eel.pay_system(money, coupon)();
+                document.getElementById('plog').value += res + "\n";
             }
             let payment = document.getElementById('payment')
             payment.addEventListener('click', () => {
-                if (input_form2.input.value == "") {
+                // クーポンコード変数
+                const cval = input_form2.input_c.value;
+                if (input_form2.input_p.value == "") {
                     alert("何か入力してください");
                     return false;
+                }else if (cval != "" && cval != "Lucky10%" &&
+                            cval != "Lucky20%" && cval != "Lucky30%") {
+                    alert("クーポンが存在しません");
+                    return false;
                 }else {
-                    cal_func(money.value);
+                    cal_func(money.value, coupon.value);
                     return true;
                 }
             })
-            // function link(target) {
-            //    window.location.href=target
-            //}
+            //初期表示はwrap02を非表示
+            document.getElementById("wrap01").style.display ="block";
+            document.getElementById("wrap02").style.display ="none";
+            // 切り替え関数
+            function vis_invis(){
+                const wrap01 = document.getElementById("wrap01");
+	            const wrap02 = document.getElementById("wrap02");
+	            if(wrap02.style.display=="block"){
+		            // noneで非表示
+                    wrap01.style.display ="block";
+		            wrap02.style.display ="none";
+	            }else{
+		            // blockで表示
+                    wrap01.style.display ="none";
+		            wrap02.style.display ="block";
+	            }
+            }
         </script>
     </body>
 </html>

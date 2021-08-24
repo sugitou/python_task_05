@@ -6,7 +6,7 @@ import random
 item_csv = 'item.csv'
 ### 商品クラス
 class Item:
-    def __init__(self,item_code,item_name,price):
+    def __init__(self, item_code, item_name, price):
         self.item_code=item_code
         self.item_name=item_name
         self.price=price
@@ -22,7 +22,7 @@ class Item:
 
 ### オーダークラス
 class Order:
-    def __init__(self,item_master):
+    def __init__(self, item_master):
         self.item_order_list=[]
         self.item_master=item_master
         self.total_price = 0
@@ -85,53 +85,60 @@ class Option:
                 item_master.append(Item(rows[0], rows[1], rows[2]))
         return item_master
 
-### 商品登録
-def regist(code, number, order):
-    # 出力値を受け取る
-    output_data = order.add_item_order(code, number)
-    str_p = f'総額： ￥{order.get_price()}\n'
-    output_data += str_p
-    return output_data
-### 総額
-# def set_price(order):
-#     return order.get_price()
-### クーポン発券
-def cp_gift():
-    cps = ['Lucky10%', 'Lucky20%', 'Lucky30%']
-    gift = random.choice(cps)
-    if gift == 'Lucky10%':
-        cp_result = f'10%引きのクーポンが発券されました！\n{gift}'
-    elif gift == 'Lucky20%':
-        cp_result = f'20%引きのクーポンが発券されました！\n{gift}'
-    else:
-        cp_result = f'30%引きのクーポンが発券されました！\n{gift}'
-    return cp_result
-### クーポン交換
-def cp_trans(tp, ticket):
-    if ticket == 'Lucky10%':
-        disc_amount = tp * 0.9
-    elif ticket == 'Lucky20%':
-        disc_amount = tp * 0.8
-    elif ticket == 'Lucky30%':
-        disc_amount = tp * 0.7
-    else:
-        disc_amount = tp
-    return int(disc_amount)
-### レジ計算
-def payment(money, coupon, order):
-    money_i = 0
-    try:
-        money_i = int(money)
-    except ValueError:
-        return '数字を入力してください。'
-    # クーポン適用
-    disc_after = cp_trans(order.get_price(), coupon)
-    # お預かり金額の確認
-    if money_i >= disc_after:
-        change = money_i - disc_after
-        cp = cp_gift()
-        change_result = f'{change}円のお返しです。\n{cp}\nまたのお越しをお待ちしております。\n'
-        return change_result
-    else:
-        return 'お金が足りません。'
+### 計算クラス
+class Calculation:
+    def __init__(self, order, coupon):
+        self.order=order
+        self.coupon=coupon
+    ### 商品登録
+    def regist(self, code, number):
+        # 出力値を受け取る
+        output_data = self.order.add_item_order(code, number)
+        str_p = f'総額： ￥{self.order.get_price()}\n'
+        output_data += str_p
+        return output_data
+    ### レジ計算
+    def payment(self, money, coupon_code):
+        money_i = 0
+        try:
+            money_i = int(money)
+        except ValueError:
+            return '数字を入力してください。'
+        # クーポン適用
+        disc_after = self.coupon.cp_trans(self.order.get_price(), coupon_code)
+        # お預かり金額の確認
+        if money_i >= disc_after:
+            change = money_i - disc_after
+            cp = self.coupon.cp_gift()
+            change_result = f'{change}円のお返しです。\n{cp}\nまたのお越しをお待ちしております。\n'
+            return change_result
+        else:
+            return 'お金が足りません。'
+
+### クーポンクラス
+class Create_Coupon:
+    ### クーポン発券
+    @staticmethod
+    def cp_gift():
+        cps = ['Lucky10%', 'Lucky20%', 'Lucky30%']
+        gift = random.choice(cps)
+        if gift == 'Lucky10%':
+            cp_result = f'10%引きのクーポンが発券されました！\n{gift}'
+        elif gift == 'Lucky20%':
+            cp_result = f'20%引きのクーポンが発券されました！\n{gift}'
+        else:
+            cp_result = f'30%引きのクーポンが発券されました！\n{gift}'
+        return cp_result
+    ### クーポン交換
+    @staticmethod
+    def cp_trans(tp, ticket):
+        if ticket == 'Lucky10%':
+            disc_amount = tp * 0.9
+        elif ticket == 'Lucky20%':
+            disc_amount = tp * 0.8
+        elif ticket == 'Lucky30%':
+            disc_amount = tp * 0.7
+        else:
+            disc_amount = tp
+        return int(disc_amount)
     
